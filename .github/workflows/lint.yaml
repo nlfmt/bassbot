@@ -1,0 +1,15 @@
+name: Lint Code
+on:
+  push:
+    branches:
+      - main
+jobs:
+  lint-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+
+      - run: bun install
+      - run: bun run lint
+      - run: bun run eslint
