@@ -3,8 +3,8 @@ import {
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
-  MessageFlagsBitField,
   type APIEmbed,
+  type InteractionReplyOptions,
   type MessageCreateOptions,
 } from "discord.js"
 import { type Track } from "shoukaku"
@@ -38,7 +38,7 @@ export type EmbedOpts = {
   timestamp?: boolean
   fields?: { name: string; value: string; inline?: boolean }[]
   footer?: { text: string; icon_url?: string }
-  ephemeral?: boolean
+  flags?: InteractionReplyOptions["flags"]
 }
 
 export function createMessageEmbed(msg: string, opts?: EmbedOpts) {
@@ -85,6 +85,6 @@ export function nowPlayingEmbed(track: Track) {
   return {
     embeds: [embed],
     components: [row],
-    flags: [MessageFlagsBitField.Flags.SuppressNotifications],
+    flags: "SuppressNotifications",
   } satisfies MessageCreateOptions
 }

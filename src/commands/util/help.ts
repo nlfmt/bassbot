@@ -66,6 +66,6 @@ export default createCommand({
       footer = "Type /help <command> to get more information about a specific command."
     }
 
-    reply(description, { ephemeral: true, title, footer: { text: footer } })
+    reply(description, { flags: "Ephemeral", title, footer: { text: footer } })
   },
 })

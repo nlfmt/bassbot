@@ -14,7 +14,7 @@ export default createValidator({
     await ctx.reply.error(
       "Please use one of these channels for music commands:\n\n" +
         guildOpts.channels.map((id) => `<#${id}>`).join(", "),
-      { ephemeral: true }
+      { flags: "Ephemeral" }
     )
     return false
   },

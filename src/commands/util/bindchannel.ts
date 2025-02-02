@@ -54,7 +54,7 @@ export default createCommand({
         })
         logger.info(`Binding channel ${options.channel.id} in guild '${i.guild.name}'`)
         return reply(`Successfully bound to channel <#${options.channel.id}>.`, {
-          ephemeral: true,
+          flags: "Ephemeral",
           color: 0x22ff22,
         })
 
@@ -64,7 +64,7 @@ export default createCommand({
         })
         logger.info(`Unbinding channel ${options.channel.id} in guild '${i.member.guild.name}'`)
         return reply(`Successfully unbound channel <#${options.channel.id}>.`, {
-          ephemeral: true,
+          flags: "Ephemeral",
           color: 0x22ff22,
         })
 
@@ -74,13 +74,13 @@ export default createCommand({
           channels: [],
         })
         return reply("Successfully cleared channels.", {
-          ephemeral: true,
+          flags: "Ephemeral",
           color: 0x22ff22,
         })
 
       case "list":
         if (channels.length == 0) return reply("No channels are bound.")
-        return reply(`Bound channels: ${channels.map((c) => `<#${c}>`).join(", ")}`, { ephemeral: true })
+        return reply(`Bound channels: ${channels.map((c) => `<#${c}>`).join(", ")}`, { flags: "Ephemeral" })
     }
   },
 })

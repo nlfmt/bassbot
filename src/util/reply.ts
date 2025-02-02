@@ -1,8 +1,9 @@
-import type { Awaitable, ButtonInteraction, CommandInteraction } from "discord.js"
+import { type Awaitable, type ButtonInteraction, type CommandInteraction } from "discord.js"
 import { createMessageEmbed, type EmbedOpts } from "./message"
 
 export async function replyEmbed(i: CommandInteraction, msg: string, opts?: EmbedOpts) {
   opts = opts || {}
+
   if (i.replied || i.deferred) {
     return i.editReply({
       body: null,
@@ -12,17 +13,17 @@ export async function replyEmbed(i: CommandInteraction, msg: string, opts?: Embe
   } else {
     return i.reply({
       embeds: [createMessageEmbed(msg, opts)],
-      ephemeral: "ephemeral" in opts ? opts.ephemeral : true,
+      flags: opts.flags
     })
   }
 }
 
 export async function replyWarn(i: CommandInteraction, msg: string, opts?: EmbedOpts) {
-  return replyEmbed(i, msg, { ...opts, color: 0xff8f30, ephemeral: true })
+  return replyEmbed(i, msg, { ...opts, color: 0xff8f30, flags: "Ephemeral" })
 }
 
 export async function replyError(i: CommandInteraction, msg: string, opts?: EmbedOpts) {
-  return replyEmbed(i, msg, { ...opts, color: 0xe25d50, ephemeral: true })
+  return replyEmbed(i, msg, { ...opts, color: 0xe25d50, flags: "Ephemeral" })
 }
 
 export function createReplyHelper(i: CommandInteraction) {

@@ -105,9 +105,10 @@ export class PlayerWithQueue extends Player {
 
     this.cancelDisconnect()
     this.playTrack({
-      track: track.encoded,
-      options: { noReplace: false, pause: false, volume: 50 },
-    })
+      track: { encoded: track.encoded },
+      paused: false,
+      volume: 50,
+    }, false)
   }
 
   public next(pos: number | null = null) {

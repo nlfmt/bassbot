@@ -10,8 +10,10 @@ export class BassBot extends Client<true> {
   public lava = new Shoukaku(new Connectors.DiscordJS(this), nodes, {
     userAgent: BassBot.name,
     structures: {
-      player: PlayerWithQueue,
+      player: PlayerWithQueue as any,
     },
+    reconnectTries: 9,
+    reconnectInterval: 10000,
   })
   public commands!: Awaited<ReturnType<typeof loadCommands>>
 

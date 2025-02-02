@@ -40,7 +40,7 @@ export type Command<
   validators?: ValidatorFn<NoInfer<AllowButtons>, Options, Record<string, never>>[]
   middleware?: MiddlewareFn<AllowButtons, Data>,
   run: (ctx: CommandContext<NoInfer<AllowButtons>, Options, NoInfer<Data>>) => Awaitable<unknown>
-} 
+}
 
 export type CommandDef<
   AllowButtons extends boolean = false,
