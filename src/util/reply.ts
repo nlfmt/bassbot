@@ -2,7 +2,7 @@ import { type Awaitable, type ButtonInteraction, type CommandInteraction } from 
 import { createMessageEmbed, type EmbedOpts } from "./message"
 
 export async function replyEmbed(i: CommandInteraction, msg: string, opts?: EmbedOpts) {
-  opts = opts || {}
+  opts = opts ?? {}
 
   if (i.replied || i.deferred) {
     return i.editReply({
@@ -43,17 +43,17 @@ export type ReplyHelper = ReturnType<typeof createReplyHelper>
 export function createAbortHelper(i: CommandInteraction, onAbort: () => void) {
   const abort = async (msg: string, opts?: EmbedOpts) => {
     onAbort()
-    replyEmbed(i, msg, opts)
+    await replyEmbed(i, msg, opts)
     return null
   }
   abort.error = async (msg: string, opts?: EmbedOpts) => {
     onAbort()
-    replyError(i, msg, opts)
+    await replyError(i, msg, opts)
     return null
   }
   abort.warn = async (msg: string, opts?: EmbedOpts) => {
     onAbort()
-    replyWarn(i, msg, opts)
+    await replyWarn(i, msg, opts)
     return null
   }
   return abort
@@ -64,15 +64,15 @@ export function mockReplyHelper(i: ButtonInteraction<"cached">) {
   return mockHelper(i, () => i.deferUpdate()) as unknown as ReplyHelper
 }
 export function mockAbortHelper(i: ButtonInteraction<"cached">, onAbort: () => void) {
-  return mockHelper(i, () => {
+  return mockHelper(i, async () => {
     onAbort()
-    i.deferUpdate()
+    await i.deferUpdate()
     return null
   }) as unknown as AbortHelper
 }
 
 const mockHelper = (i: ButtonInteraction<"cached">, fn: () => Awaitable<any>) => {
-  const mockFn: any = fn
+  const mockFn = fn as { (): Awaitable<any>; error: Awaitable<any>; warn: Awaitable<any> }
   mockFn.error = fn
   mockFn.warn = fn
   return fn

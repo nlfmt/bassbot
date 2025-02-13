@@ -9,7 +9,7 @@ export default createCommand({
   middleware: requireHistory,
   
   run: async ({ reply, data: { player } }) => {
-    player.prev()
+    await player.prev()
     return reply("Playing previous song.")
   },
 })

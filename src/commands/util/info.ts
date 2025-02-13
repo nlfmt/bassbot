@@ -1,5 +1,5 @@
 import { createCommand } from "@/util/command"
-import { duration } from "@/util/message"
+import { duration } from "@/util/time"
 import { EmbedBuilder } from "discord.js"
 
 export default createCommand({

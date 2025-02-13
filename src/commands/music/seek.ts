@@ -1,6 +1,6 @@
 import requirePlayer from "@/middlewares/requirePlayer"
 import { createCommand, buildOptions } from "@/util/command"
-import { parseTimestamp } from "@/util/helpers"
+import { Timestamp } from "@/util/time"
 
 export default createCommand({
   description: "Seek to the specified time in the current song",
@@ -14,15 +14,19 @@ export default createCommand({
   middleware: requirePlayer,
 
   run: async ({ options, reply, data: { player } }) => {
-    if (!player.current?.info.isSeekable) return reply.warn("This track is not seekable")
+    const info = player.current?.info
+    if (!info?.isSeekable) return reply.warn("This track is not seekable")
+    console.log(info)
 
-    const res = parseTimestamp(options.time)
-    if (!res.success) return reply.warn("Wrong timestamp format, expected XX:XX")
+    const { success, value: duration, error } = Timestamp.from(options.time)
+    if (!success) return reply.warn(error)
 
-    await player.seekTo(res.value.millis)
+    if (duration.asMillis() > info.length) {
+      return reply.warn(`Track is only ${Timestamp.fromMillis(info.length)} long`)
+    }
 
-    const mins = res.value.mins.toString().padStart(2, "0")
-    const secs = res.value.secs.toString().padStart(2, "0")
-    return reply(`Seeked to ${mins}:${secs}`)
+    await player.seekTo(duration.asMillis())
+
+    return reply(`Seeked to ${duration}`)
   },
 })

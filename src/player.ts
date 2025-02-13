@@ -2,6 +2,7 @@ import type { GuildTextBasedChannel } from "discord.js"
 import { Constants, Player, type Track } from "shoukaku"
 import { createMessageEmbed, EmbedColor, nowPlayingButtons, nowPlayingEmbed } from "./util/message"
 import type { BassBot } from "./bot"
+import logger from "./util/logger"
 
 export const LoopMode = {
   None: "None",
@@ -27,9 +28,11 @@ export class PlayerWithQueue extends Player {
     this.bot = bot
     this.textChannel = textChannel
 
-    this.on("end", ({ reason }) => {
+    this.on("end", async ({ reason }) => {
       if (this.playerMsgId && this.textChannel) {
-        this.textChannel.messages.delete(this.playerMsgId).catch(() => {})
+        this.textChannel.messages.delete(this.playerMsgId).catch(() => {
+          logger.warn(`Failed to delete player message with id: ${this.playerMsgId}`)
+        })
       }
 
       if (reason != "finished" && reason != "loadFailed") return
@@ -50,9 +53,9 @@ export class PlayerWithQueue extends Player {
       }
       else if (this.loopMode == LoopMode.Autoplay) {
         // TODO: Implement autoplay
-        this.next()
+        await this.next()
       }
-      this.next()
+      await this.next()
     })
 
     this.on("start", async (data) => {
@@ -61,10 +64,10 @@ export class PlayerWithQueue extends Player {
       this.playerMsgId = msg.id
     })
 
-    this.on("exception", ({ exception }) => {
+    this.on("exception", async ({ exception }) => {
       if (!this.textChannel) return
 
-      this.textChannel.send({
+      await this.textChannel.send({
         embeds: [
           createMessageEmbed(`An error occurred while playing the track: ${exception.message}`, {
             color: EmbedColor.Error,
@@ -73,10 +76,9 @@ export class PlayerWithQueue extends Player {
       })
     })
 
-    // this.on("closed", this.disconnect.bind(this))
-    this.on("closed", () => {
+    this.on("closed", async () => {
       if (this.node.state !== Constants.State.CONNECTED) return
-      this.disconnect()
+      await this.disconnect()
     })
 
     this.bot.on("voiceStateUpdate", (prev, next) => {
@@ -95,40 +97,40 @@ export class PlayerWithQueue extends Player {
     return this._current
   }
 
-  public play(track: Track | undefined) {
+  public async play(track: Track | undefined) {
     this._current = track
     if (!track) {
-      this.stopTrack()
+      await this.stopTrack()
       this.scheduleDisconnect()
       return
     }
 
     this.cancelDisconnect()
-    this.playTrack({
+    await this.playTrack({
       track: { encoded: track.encoded },
       paused: false,
       volume: 50,
     }, false)
   }
 
-  public next(pos: number | null = null) {
+  public async next(pos: number | null = null) {
     if (this.current) this.history.push(this.current)
     if (pos && pos > 1) {
       const skipped = this.queue.splice(0, pos - 1)
       this.history.push(...skipped)
     }
-    this.play(this.queue.shift())
+    await this.play(this.queue.shift())
   }
 
-  public prev() {
-    if (this.current) this.queue.unshift(this.current!)
-    this.play(this.history.pop())
+  public async prev() {
+    if (this.current) this.queue.unshift(this.current)
+    await this.play(this.history.pop())
   }
 
-  public addTracks(tracks: Track[], next = false) {
+  public async addTracks(tracks: Track[], next = false) {
     if (next) this.queue.unshift(...tracks)
     else this.queue.push(...tracks)
-    if (!this.current) this.next()
+    if (!this.current) await this.next()
   }
   public addTrack(track: Track, next = false) {
     return this.addTracks([track], next)
@@ -164,10 +166,10 @@ export class PlayerWithQueue extends Player {
     return deleted.length
   }
 
-  public setPaused(paused: boolean) {
+  public async setPaused(paused: boolean) {
     if (this.paused != paused && this.textChannel && this.playerMsgId) {
       const msg = this.textChannel.messages.cache.get(this.playerMsgId)
-      if (msg) msg.edit({ components: [nowPlayingButtons(paused)] })
+      if (msg) await msg.edit({ components: [nowPlayingButtons(paused)] })
     }
     return super.setPaused(paused)
   }
@@ -192,8 +194,8 @@ export class PlayerWithQueue extends Player {
   public scheduleDisconnect(seconds = 60) {
     this.cancelDisconnect()
     
-    this._disconnect = setTimeout(() => {
-      this.disconnect()
+    this._disconnect = setTimeout(async () => {
+      await this.disconnect()
     }, seconds * 1000)
   }
   

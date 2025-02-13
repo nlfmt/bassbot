@@ -1,7 +1,7 @@
 import type { Track } from "shoukaku"
 import { type GuildOptions } from "./db"
 import type { z } from "zod"
-import type { Maybe } from "./types"
+import { Maybe } from "./maybe"
 
 /** Checks if a channel id is an allowed channel based on the guild's options */
 export function isAllowedChannel(guildOpts: GuildOptions | null, channelId: string): guildOpts is null {
@@ -12,16 +12,7 @@ export function isAllowedChannel(guildOpts: GuildOptions | null, channelId: stri
   return guildOpts.channels.includes(channelId)
 }
 
-/** Takes a timestamp in format MM:SS or MM and returns the milliseconds */
-export function parseTimestamp(time: string): Maybe<{ mins: number, secs: number, millis: number }> {
-  let millis = 0
-  const [mins, secs] = time.split(":").map(parseInt)
-  if (mins) millis += mins * 60_000
-  if (secs) millis += secs * 1000
 
-  if (isNaN(millis)) return { success: false }
-  return { success: true, value: { mins: mins ?? 0, secs: secs ?? 0, millis } }
-}
 
 /** Removes unnecessary info and duplicated artist names from the title */
 export function cleanTrackTitle(track: Track) {
@@ -58,8 +49,8 @@ export async function fetchAndParse<T extends z.ZodSchema>(
 ): Promise<Maybe<z.infer<T>, unknown>> {
   try {
     const json = await fetch(url, init).then((d) => d.json())
-    return { success: true, value: schema.parse(json) }
+    return Maybe.Yes(schema.parse(json))
   } catch (e) {
-    return { success: false, error: e }
+    return Maybe.No(e)
   }
 }

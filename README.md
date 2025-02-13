@@ -23,8 +23,8 @@ The bot uses bun, which simplifies running the code by skipping the need for a b
 ## How to run
 1. Clone the repository
 2. Run `bun install`
-3. Copy the `.env.example` file to `.env` and fill in the tokens
-4. Copy the `nodes.example.json` file to `nodes.json` and fill you lavalink node information
+3. Copy the `.env.example` file and rename it to `.env`, then fill in the tokens
+4. Copy the `nodes.example.json` file and rename it to `nodes.json`, then fill in your lavalink node information
 5. Run `bun register` to register the commands to your application
 6. Run `bun start`
 7. Invite the bot to your server, join a voice channel and run the `play` command

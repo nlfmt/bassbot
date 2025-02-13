@@ -31,6 +31,6 @@ export default createCommand({
     if (!res.success) return reply.warn("Invalid Loop Mode")
 
     player.setLoopMode(res.data)
-    reply(`Set Loop Mode to '${res.data}'`)
+    return reply(`Set Loop Mode to '${res.data}'`)
   },
 })

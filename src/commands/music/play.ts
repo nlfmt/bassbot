@@ -47,20 +47,20 @@ export default createCommand({
       }
 
       case LoadType.TRACK: {
-        player.addTrack(result.data, options.next ?? false)
+        await player.addTrack(result.data, options.next ?? false)
         return reply(`Queued **${cleanTrackTitle(result.data)}** by **${result.data.info.author}**`)
       }
 
       case LoadType.PLAYLIST: {
-        player.addTracks(result.data.tracks, options.next ?? false)
+        await player.addTracks(result.data.tracks, options.next ?? false)
         return reply(
-          `Queued **${result.data.tracks.length}** songs from **[${result.data.info.name}](${query})** to the queue`
+          `Added **${result.data.tracks.length}** songs from **[${result.data.info.name}](${query})** to the queue`
         )
       }
 
       case LoadType.SEARCH: {
         const track = result.data[0]!
-        player.addTrack(track, options.next ?? false)
+        await player.addTrack(track, options.next ?? false)
         return reply(`Queued **${cleanTrackTitle(track)}** by **${track.info.author}**`)
       }
     }

@@ -94,7 +94,7 @@ export class BassBot extends Client<true> {
         const valid = await validator(ctx)
         if (!valid) {
           if (!ctx.i.replied) {
-            ctx.reply.error("You cannot use this command here.")
+            await ctx.reply.error("You cannot use this command here.")
           }
           return
         }
@@ -113,9 +113,9 @@ export class BassBot extends Client<true> {
       await command.run(ctx)
     } catch (e) {
       logger.error("CMD ERROR", "Unhandled Exception in command:")
-      console.log(e)
+      logger.debug(e)
       if (isCommand)
-        replyError(i, "An internal error occured. Please contact <@339719840363184138> if the issue persists.")
+        await replyError(i, "An internal error occured. Please contact <@339719840363184138> if the issue persists.")
     }
   }
 }

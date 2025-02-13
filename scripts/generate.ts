@@ -21,9 +21,9 @@ const templateSchema = z.string().refine((name) => Object.values(templateDef).so
 const [template, name] = process.argv.slice(2)
 if (!template) {
   console.error(
-    `Usage: bun g [template] [name]\n\nAvailable templates: ${Object.entries(templateDef)
-      .map(([key, def]) => `${key} (${def.join(", ")})`)
-      .join(", ")}`
+    `Usage: bun g [template] [name]\n\nAvailable templates:\n${Object.entries(templateDef)
+      .map(([key, def]) => `  ${key} (${def.join(", ")})`)
+      .join("\n")}`
   )
   process.exit(0)
 }
@@ -48,19 +48,19 @@ switch (type) {
       process.exit(1)
     }
     console.log(`\nCreating command ${chalk.green(command)} in category ${chalk.green(category)}`)
-    createCommand(category!, command)
+    await createCommand(category!, command)
     break
   }
 
   case "validator": {
     console.log(`\nCreating validator ${chalk.green(name)}`)
-    createValidator(name)
+    await createValidator(name)
     break
   }
 
   case "middleware": {
     console.log(`\nCreating middleware ${chalk.green(name)}`)
-    createMiddleware(name)
+    await createMiddleware(name)
     break
   }
 }
@@ -68,18 +68,18 @@ switch (type) {
 async function createCommand(category: string, command: string) {
   const commandDir = `src/commands/${category}`
   await mkdir(commandDir, { recursive: true })
-  writeTemplate("command", `${commandDir}/${command}.ts`)
+  await writeTemplate("command", `${commandDir}/${command}.ts`)
 }
 
 async function createValidator(name: string) {
   const validatorDir = "src/validators"
   await mkdir(validatorDir, { recursive: true })
-  writeTemplate("validator", `${validatorDir}/${name}.ts`)
+  await writeTemplate("validator", `${validatorDir}/${name}.ts`)
 }
 async function createMiddleware(name: string) {
   const middlewareDir = "src/middlewares"
   await mkdir(middlewareDir, { recursive: true })
-  writeTemplate("middleware", `${middlewareDir}/${name}.ts`)
+  await writeTemplate("middleware", `${middlewareDir}/${name}.ts`)
 }
 
 async function writeTemplate(template: string, dest: string) {
@@ -88,7 +88,7 @@ async function writeTemplate(template: string, dest: string) {
     console.error(`\nFile '${dest}' already exists.`)
     process.exit(1)
   }
-  Bun.write(dest, Bun.file(src))
+  await Bun.write(dest, Bun.file(src))
   console.log(" -> " + chalk.blue(chalk.underline(dest)))
 
   // Open generated file in current vscode instance
@@ -96,12 +96,12 @@ async function writeTemplate(template: string, dest: string) {
 }
 
 function isVsCodeTerminal() {
-  return process.env["TERM_PROGRAM"] == "vscode"
+  return process.env.TERM_PROGRAM == "vscode"
 }
 
 function getVsCodeBinary() {
   return (
-    process.env["VSCODE_GIT_ASKPASS_NODE"] ??
-    (process.env["TERM_PROGRAM_VERSION"]?.includes("insider") ? "code-insiders" : "code")
+    process.env.VSCODE_GIT_ASKPASS_NODE ??
+    (process.env.TERM_PROGRAM_VERSION?.includes("insider") ? "code-insiders" : "code")
   )
 }

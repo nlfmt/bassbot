@@ -98,10 +98,10 @@ function _parseOptions(parsed: Record<string, any>, options: readonly CommandInt
   if (!options) return parsed
   for (const option of options) {
     if (option.type === OptionType.Subcommand) {
-      parsed["__cmd"] = option.name
+      parsed.__cmd = option.name
       _parseOptions(parsed, option.options)
     } else if (option.type === OptionType.SubcommandGroup) {
-      parsed["__group"] = option.name
+      parsed.__group = option.name
       _parseOptions(parsed, option.options)
     } else {
       parsed[option.name] = getOptionValue(option)
@@ -124,7 +124,7 @@ function getOptionValue(option: CommandInteractionOption) {
     case OptionType.Role:
       return option.role
     case OptionType.Mentionable:
-      return option.role || option.user
+      return option.role ?? option.user
     case OptionType.Attachment:
       return option.attachment
   }

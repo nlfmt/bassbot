@@ -17,7 +17,7 @@ export default createCommand({
   middleware: requirePlayer,
 
   run: async ({ options, reply, data: { player } }) => {
-    player.setGlobalVolume(options.value / 2)
+    await player.setGlobalVolume(options.value / 2)
     return reply("Set the volume to **" + options.value + "%**.")
   },
 })

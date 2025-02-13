@@ -6,31 +6,35 @@
     "dev": "bun --watch src/index.ts",
     "register": "bun scripts/register-commands.ts",
     "start": "bun run src/index.ts",
-    "eslint": "eslint . --ignore-pattern \"**/*.template.ts\"",
+    "eslint": "eslint .",
     "lint": "tsc",
     "g": "bun scripts/generate.ts"
   },
   "devDependencies": {
-    "@eslint/js": "^9.19.0",
+    "@eslint/js": "^9.20.0",
     "@types/bun": "latest",
-    "eslint": "^9.19.0",
-    "globals": "^15.14.0",
-    "prettier": "^3.4.2",
-    "typescript-eslint": "^7.18.0"
+    "@typescript-eslint/parser": "^8.24.0",
+    "eslint": "^9.20.1",
+    "globals": "^15.15.0",
+    "jiti": "^2.4.2",
+    "prettier": "^3.5.1",
+    "prettier-eslint": "^16.3.0",
+    "typescript-eslint": "^8.24.0"
   },
   "peerDependencies": {
-    "typescript": "^5.4.4"
+    "typescript": "^5.7.3"
   },
   "dependencies": {
     "@nlfmt/stormdb": "^1.0.0",
     "@types/string-pixel-width": "^1.10.3",
     "chalk": "^5.4.1",
-    "discord.js": "^14.17.3",
+    "discord.js": "^14.18.0",
     "dotenv": "^16.4.7",
     "moment": "^2.30.1",
     "shoukaku": "^4.1.1",
     "string-pixel-width": "^1.11.0",
     "zod": "3.22.4",
     "zod-error": "^1.5.0"
-  }
+  },
+  "packageManager": "pnpm@10.2.0+sha512.0d27364e0139c6aadeed65ada153135e0ca96c8da42123bd50047f961339dc7a758fc2e944b428f52be570d1bd3372455c1c65fa2e7aa0bfbf931190f9552001"
 }

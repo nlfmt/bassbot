@@ -14,7 +14,7 @@ export default createCommand({
   middleware: requirePlayer,
 
   run: async ({ options, reply, data: { player } }) => {
-    player.next(options.position)
+    await player.next(options.position)
     return reply("Playing next song.")
   },
 })

@@ -18,21 +18,11 @@ export const EmbedColor = {
   White90: 0xe6e6e6,
 } as const
 
-/** takes a number of seconds and returns a duration string */
-export function duration(s: number) {
-  s = Math.round(s)
-  const h = Math.floor(s / 3600)
-  s -= h * 3600
-  const m = Math.floor(s / 60)
-  s -= m * 60
-  return (h > 0 ? `${h}h ` : "") + (m > 0 ? `${m}m ` : "") + `${s}s`
-}
-
 export function code(msg: unknown) {
   return `\`\`\`${msg}\`\`\``
 }
 
-export type EmbedOpts = {
+export interface EmbedOpts {
   title?: string
   color?: number
   timestamp?: boolean
@@ -67,7 +57,8 @@ export function nowPlayingButtons(paused: boolean) {
       .setCustomId("pause")
       .setLabel(paused ? "Resume" : "Pause")
       .setStyle(ButtonStyle.Primary),
-    new ButtonBuilder().setCustomId("next").setLabel("Next").setStyle(ButtonStyle.Secondary)
+    new ButtonBuilder().setCustomId("next").setLabel("Next").setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId("queue").setLabel("Queue").setStyle(ButtonStyle.Secondary)
   )
 }
 

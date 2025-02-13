@@ -62,7 +62,7 @@ function register(commands: Awaited<ReturnType<typeof loadCommands>>) {
 if (clear) {
   rl.question(
     `\x1b[33mAre you sure you want to clear all commands for this ${guildId ? "guild" : "application"}? (y/n)\x1b[0m `,
-    async (answer) => {
+    (answer) => {
       if (answer == "y") register(new Map())
       else process.exit(0)
     }

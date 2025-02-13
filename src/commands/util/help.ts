@@ -33,7 +33,7 @@ export default createCommand({
     let footer = ""
 
     if (command) {
-      const cmd = commands.filter((c) => c.name === command)[0]
+      const cmd = commands.find((c) => c.name === command)
       if (!cmd) return reply.error(`Command '${command}' not found.`)
       footer = "Options marked with * are required."
       title = `Command: ${cmd.name}`
@@ -66,6 +66,6 @@ export default createCommand({
       footer = "Type /help <command> to get more information about a specific command."
     }
 
-    reply(description, { flags: "Ephemeral", title, footer: { text: footer } })
+    await reply(description, { flags: "Ephemeral", title, footer: { text: footer } })
   },
 })

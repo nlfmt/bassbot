@@ -8,7 +8,7 @@ export default createCommand({
 
   run: async ({ reply, data: { player } }) => {
     const newState = !player.paused
-    player.setPaused(newState)
-    reply(newState ? "Paused." : "Resumed.")
+    await player.setPaused(newState)
+    await reply(newState ? "Paused." : "Resumed.")
   },
 })

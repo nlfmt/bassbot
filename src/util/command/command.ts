@@ -13,11 +13,11 @@ import type { ReplyHelper } from "../reply"
 import type { ValidatorFn } from "../validator"
 import type { MiddlewareFn } from "../middleware"
 
-export type CommandContext<
+export interface CommandContext<
   AllowButtons extends boolean = false,
   Options extends ApplicationCommandOption[] = [],
   Data extends Record<string, any> = Record<string, never>,
-> = {
+> {
   i: AllowButtons extends true
     ? ChatInputCommandInteraction<"cached"> | ButtonInteraction<"cached">
     : ChatInputCommandInteraction<"cached">
@@ -27,11 +27,11 @@ export type CommandContext<
   options: ResolveOptions<Options>
 }
 
-export type Command<
+export interface Command<
   AllowButtons extends boolean = false,
   Options extends ApplicationCommandOption[] = [],
   Data extends Record<string, any> = Record<string, never>,
-> = {
+> {
   name: string
   description: string
   allowButtons?: AllowButtons
@@ -57,7 +57,7 @@ export const createCommand = <
 
 export async function loadCommands() {
   const dir = path.join(import.meta.dir, "..", "..", "commands")
-  const commands: Map<string, Command<boolean, ApplicationCommandOption[], Record<string, never>>> = new Map()
+  const commands = new Map<string, Command<boolean, ApplicationCommandOption[], Record<string, never>>>()
   
   await Promise.allSettled(
     fs.readdirSync(dir).map(category =>

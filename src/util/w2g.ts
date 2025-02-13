@@ -15,7 +15,7 @@ export async function createRoom(vid_url: string | null) {
       },
       body: JSON.stringify({
         w2g_api_key: env.W2G_KEY,
-        share: vid_url || "",
+        share: vid_url ?? "",
         bg_color: "#404040",
         bg_opacity: "100",
       }),

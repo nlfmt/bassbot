@@ -26,7 +26,7 @@ export default createCommand({
 
     logger.info("Created room: " + url)
 
-    i.reply({
+    await i.reply({
       components: [row],
     })
   },
