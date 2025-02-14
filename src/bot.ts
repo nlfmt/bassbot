@@ -13,7 +13,7 @@ export class BassBot extends Client<true> {
       player: PlayerWithQueue as any,
     },
     reconnectTries: 9,
-    reconnectInterval: 10000,
+    reconnectInterval: 10,
   })
   public commands!: Awaited<ReturnType<typeof loadCommands>>
 

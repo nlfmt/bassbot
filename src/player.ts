@@ -1,6 +1,6 @@
 import type { ChatInputCommandInteraction, GuildTextBasedChannel } from "discord.js"
 import { Constants, Player, type Track } from "shoukaku"
-import { createMessageEmbed, EmbedColor, nowPlayingButtons, nowPlayingEmbed } from "./util/message"
+import { createMessageEmbed, EmbedColor, nowPlayingButtons, nowPlayingMessage } from "./util/message"
 import type { BassBot } from "./bot"
 import logger from "./util/logger"
 
@@ -60,10 +60,10 @@ export class PlayerWithQueue extends Player {
 
     this.on("start", async (data) => {
       if (!this.textChannel) return
-      const msg = await this.textChannel.send(nowPlayingEmbed(data.track))
+      const msg = await this.textChannel.send(nowPlayingMessage(data.track))
       this.playerMsgId = msg.id
 
-      logger.info(`[${i.guild} / ${i.member.voice.channel?.name} / ${this.node.name}] ${data.track.info.title} - ${data.track.info.author}`)
+      logger.info(`[${i.guild} > ${i.member.voice.channel?.name} @ ${this.node.name}] ${data.track.info.title} - ${data.track.info.author}`)
     })
 
     this.on("exception", async ({ exception }) => {

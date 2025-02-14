@@ -1,4 +1,5 @@
 import { createCommand } from "@/util/command";
+import { cleanTrackTitle } from "@/util/helpers";
 import { createMessageEmbed } from "@/util/message";
 import { ActionRowBuilder, ApplicationCommandOptionType, ComponentType, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 import { LoadType } from "shoukaku";
@@ -19,7 +20,12 @@ export default createCommand({
   ],
 
   run: async ({ i, options, reply, bot }) => {
-    console.log("search")
+    const connection = bot.lava.connections.get(i.guildId)
+
+    if (connection?.channelId && connection.channelId !== i.member.voice.channelId!) {
+      return reply.error(`Already playing music in <#${connection.channelId}>`)
+    }
+
     const node = bot.lava.getIdealNode()
     if (!node) {
       return reply.error("No available nodes.");
@@ -68,16 +74,15 @@ export default createCommand({
         const track = songs[parseInt(selection)]!
 
         const player = bot.getPlayer(i.guildId) ?? (await bot.joinVC(i))
-        await player.addTrack(track, false)
+        
+        await Promise.all([
+          i.deleteReply(response.resource?.message?.id),
+          i.followUp({
+            embeds: [createMessageEmbed(`Queued **${cleanTrackTitle(track)}** by **${track.info.author}**`)],
+          }),
+        ])
 
-        await i.editReply({
-          embeds: [
-            createMessageEmbed(
-              `Queued **${track.info.title}** by **${track.info.author}**`,
-            ),
-          ],
-          components: [],
-        })
+        await player.addTrack(track, false)
       }
     } catch(_e) {
       await i.editReply({ embeds: [createMessageEmbed("You took too long to select a song.")], components: [] })

@@ -9,7 +9,7 @@ import {
 } from "discord.js"
 import { type Track } from "shoukaku"
 import { cleanTrackTitle } from "./helpers"
-import { Emoji } from "@/constants/emojis"
+import { AppEmoji } from "@/constants/emojis"
 
 export const EmbedColor = {
   Error: 0xe25d50,
@@ -53,21 +53,23 @@ export function embedMsg(msg: string, opts?: EmbedOpts) {
 
 export function nowPlayingButtons(paused: boolean) {
   return new ActionRowBuilder<ButtonBuilder>().addComponents(
-    new ButtonBuilder().setCustomId("prev").setEmoji(Emoji.prev).setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId("prev").setEmoji(AppEmoji.prev).setStyle(ButtonStyle.Secondary),
     new ButtonBuilder()
       .setCustomId("pause")
       .setStyle(ButtonStyle.Primary)
-      .setEmoji({ id: paused ? Emoji.play: Emoji.pause}),
-    new ButtonBuilder().setCustomId("next").setEmoji(Emoji.next).setStyle(ButtonStyle.Secondary),
+      .setEmoji({ id: paused ? AppEmoji.play: AppEmoji.pause}),
+    new ButtonBuilder().setCustomId("next").setEmoji(AppEmoji.next).setStyle(ButtonStyle.Secondary),
     new ButtonBuilder().setCustomId("queue").setLabel("Queue").setStyle(ButtonStyle.Secondary)
   )
 }
 
-export function nowPlayingEmbed(track: Track) {
+export function nowPlayingMessage(track: Track) {
   const title = cleanTrackTitle(track)
-  const padding = "\u00A0".repeat(20)
+  const padChar = "\u00A0"
+  const padLength = 47 - Math.floor(1.8 * title.length)
+  const padding = `${padLength > 0 ? padChar.repeat(padLength) : ""}${padLength > -5 ? AppEmoji.string("spacer") : ""}`
   const embed = new EmbedBuilder()
-    .setTitle("Now Playing")
+    .setAuthor({ name: "Now Playing" })
     .setDescription(`[${title}](${track.info.uri})${padding}\nby ${track.info.author}\n`)
     .setThumbnail(track.info.artworkUrl ?? null)
     .setColor(EmbedColor.White90)
