@@ -1,7 +1,7 @@
-import { type Awaitable, type ButtonInteraction, type CommandInteraction } from "discord.js"
+import { type Awaitable, type ButtonInteraction, type RepliableInteraction } from "discord.js"
 import { createMessageEmbed, type EmbedOpts } from "./message"
 
-export async function replyEmbed(i: CommandInteraction, msg: string, opts?: EmbedOpts) {
+export async function replyEmbed(i: RepliableInteraction, msg: string, opts?: EmbedOpts) {
   opts = opts ?? {}
 
   if (i.replied || i.deferred) {
@@ -13,20 +13,20 @@ export async function replyEmbed(i: CommandInteraction, msg: string, opts?: Embe
   } else {
     return i.reply({
       embeds: [createMessageEmbed(msg, opts)],
-      flags: opts.flags
+      flags: opts.flags,
     })
   }
 }
 
-export async function replyWarn(i: CommandInteraction, msg: string, opts?: EmbedOpts) {
+export async function replyWarn(i: RepliableInteraction, msg: string, opts?: EmbedOpts) {
   return replyEmbed(i, msg, { ...opts, color: 0xff8f30, flags: "Ephemeral" })
 }
 
-export async function replyError(i: CommandInteraction, msg: string, opts?: EmbedOpts) {
+export async function replyError(i: RepliableInteraction, msg: string, opts?: EmbedOpts) {
   return replyEmbed(i, msg, { ...opts, color: 0xe25d50, flags: "Ephemeral" })
 }
 
-export function createReplyHelper(i: CommandInteraction) {
+export function createReplyHelper(i: RepliableInteraction) {
   const reply = async (msg: string, opts?: EmbedOpts) => {
     return replyEmbed(i, msg, opts)
   }
@@ -40,7 +40,7 @@ export function createReplyHelper(i: CommandInteraction) {
 }
 export type ReplyHelper = ReturnType<typeof createReplyHelper>
 
-export function createAbortHelper(i: CommandInteraction, onAbort: () => void) {
+export function createAbortHelper(i: RepliableInteraction, onAbort: () => void) {
   const abort = async (msg: string, opts?: EmbedOpts) => {
     onAbort()
     await replyEmbed(i, msg, opts)

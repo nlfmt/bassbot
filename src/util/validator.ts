@@ -28,13 +28,16 @@ function _createCompositeValidator<Options extends any[] = [], AllowButtons exte
   validators: ValidatorFn[],
   predicate: Predicate<AllowButtons, Options>
 ) {
-  return ((...options: any[]) =>
-    (ctx: CommandContext<any, any>) => {
+  return ((...options: any[]) => {
+
+    return async (ctx: CommandContext<any, any>) => {
       for (const validator of validators) {
-        if (!validator(ctx)) return false
+        if (!(await validator(ctx))) return false
       }
-      return predicate(ctx, ...options)
-    }) as Validator<AllowButtons, Options>
+      return await predicate(ctx, ...options)
+    }
+
+  }) as unknown as Validator<AllowButtons, Options>
 }
 
 export function createValidator<Options extends any[] = [], AllowButtons extends boolean = boolean>(

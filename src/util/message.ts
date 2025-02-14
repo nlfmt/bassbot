@@ -9,6 +9,7 @@ import {
 } from "discord.js"
 import { type Track } from "shoukaku"
 import { cleanTrackTitle } from "./helpers"
+import { Emoji } from "@/constants/emojis"
 
 export const EmbedColor = {
   Error: 0xe25d50,
@@ -52,12 +53,12 @@ export function embedMsg(msg: string, opts?: EmbedOpts) {
 
 export function nowPlayingButtons(paused: boolean) {
   return new ActionRowBuilder<ButtonBuilder>().addComponents(
-    new ButtonBuilder().setCustomId("prev").setLabel("Prev").setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId("prev").setEmoji(Emoji.prev).setStyle(ButtonStyle.Secondary),
     new ButtonBuilder()
       .setCustomId("pause")
-      .setLabel(paused ? "Resume" : "Pause")
-      .setStyle(ButtonStyle.Primary),
-    new ButtonBuilder().setCustomId("next").setLabel("Next").setStyle(ButtonStyle.Secondary),
+      .setStyle(ButtonStyle.Primary)
+      .setEmoji({ id: paused ? Emoji.play: Emoji.pause}),
+    new ButtonBuilder().setCustomId("next").setEmoji(Emoji.next).setStyle(ButtonStyle.Secondary),
     new ButtonBuilder().setCustomId("queue").setLabel("Queue").setStyle(ButtonStyle.Secondary)
   )
 }

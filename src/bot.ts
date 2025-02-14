@@ -46,8 +46,8 @@ export class BassBot extends Client<true> {
       shardId: 0,
       deaf: true,
     }) as PlayerWithQueue
-
-    player.init(this, i.channel)
+    
+    player.init(this, i)
     return player
   }
 

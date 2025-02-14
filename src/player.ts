@@ -1,4 +1,4 @@
-import type { GuildTextBasedChannel } from "discord.js"
+import type { ChatInputCommandInteraction, GuildTextBasedChannel } from "discord.js"
 import { Constants, Player, type Track } from "shoukaku"
 import { createMessageEmbed, EmbedColor, nowPlayingButtons, nowPlayingEmbed } from "./util/message"
 import type { BassBot } from "./bot"
@@ -24,9 +24,9 @@ export class PlayerWithQueue extends Player {
   private _disconnect: ReturnType<typeof setTimeout> | null = null
   private loopMode: LoopMode = LoopMode.None
 
-  init(bot: BassBot, textChannel: GuildTextBasedChannel | null) {
+  init(bot: BassBot, i: ChatInputCommandInteraction<"cached">) {
     this.bot = bot
-    this.textChannel = textChannel
+    this.textChannel = i.channel
 
     this.on("end", async ({ reason }) => {
       if (this.playerMsgId && this.textChannel) {
@@ -62,6 +62,8 @@ export class PlayerWithQueue extends Player {
       if (!this.textChannel) return
       const msg = await this.textChannel.send(nowPlayingEmbed(data.track))
       this.playerMsgId = msg.id
+
+      logger.info(`[${i.guild} / ${i.member.voice.channel?.name} / ${this.node.name}] ${data.track.info.title} - ${data.track.info.author}`)
     })
 
     this.on("exception", async ({ exception }) => {

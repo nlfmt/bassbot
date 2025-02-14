@@ -1,8 +1,9 @@
 import requirePlayer from "@/middlewares/requirePlayer"
 import { createCommand, buildOptions } from "@/util/command"
 import { cleanTrackTitle } from "@/util/helpers"
+import { replyEmbed } from "@/util/reply"
 import { duration } from "@/util/time"
-import { Message } from "discord.js"
+import { MessageFlags } from "discord.js"
 
 export default createCommand({
   description: "View a list of songs in the queue",
@@ -24,16 +25,11 @@ export default createCommand({
       )
 
     const tracksToShow = [player.current, ...player.queue].slice(10 * (page - 1), 10 * page)
+    
+    if (tracksToShow.length === 0) return reply("No songs in queue")
     const rickroll = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
-    let msg: Message<true> | undefined = undefined
-    if (i.isButton()) {
-      await i.deferUpdate()
-      console.log("sending separate message, because trigger is button")
-      msg = await i.channel?.send({ reply: { messageReference: i.message.id }, content: "Getting song data..." })
-    } else {
-      await reply("Getting song data...")
-    }
+    await replyEmbed(i, "Getting song data...", { flags: MessageFlags.Ephemeral })
 
     const description = tracksToShow
       .map((song, index) => {
@@ -45,12 +41,14 @@ export default createCommand({
       })
       .join("\n")
 
-
     const content = {
       content: null,
       embeds: [
         {
-          title: player.queue.length + " songs, " + duration(player.getQueueDuration() / 1000) + " playtime",
+          title:
+            player.queue.length === 0
+              ? "No songs in queue"
+              : player.queue.length + " songs, " + duration(player.getQueueDuration() / 1000) + " playtime",
           description,
           footer: {
             text: "Page  " + page + "  of  " + maxPage,
@@ -59,10 +57,6 @@ export default createCommand({
       ],
     }
 
-    if (msg) {
-      await msg.edit(content)
-    } else {    
-      await i.editReply(content)
-    }
+    await i.editReply(content)
   },
 })

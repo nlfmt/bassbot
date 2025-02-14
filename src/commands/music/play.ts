@@ -32,9 +32,12 @@ export default createCommand({
       return reply.error(`Already playing music in <#${connection.channelId}>`)
     }
 
-    const query = options.song.startsWith("http") ? options.song : `ytsearch:${options.song}`
-
-    const result = await player.node.rest.resolve(query)
+    const result = options.song.startsWith("http")
+      ? await player.node.rest.resolve(options.song)
+      : ((await player.node.rest.resolve(`spsearch:${options.song}`)) ??
+        (await player.node.rest.resolve(`ytmsearch:${options.song}`)) ??
+        (await player.node.rest.resolve(`ytsearch:${options.song}`)))
+    
     if (!result) return reply.error("No results found.")
 
     switch (result.loadType) {
@@ -43,7 +46,7 @@ export default createCommand({
 
       case LoadType.ERROR: {
         logger.warn(`Song search error: ${JSON.stringify(result.data, null, 2)}`)
-        return reply.error("An error occurred while searching.")
+        return reply.error("Could not load song.")
       }
 
       case LoadType.TRACK: {
@@ -54,7 +57,7 @@ export default createCommand({
       case LoadType.PLAYLIST: {
         await player.addTracks(result.data.tracks, options.next ?? false)
         return reply(
-          `Added **${result.data.tracks.length}** songs from **[${result.data.info.name}](${query})** to the queue`
+          `Added **${result.data.tracks.length}** songs from **[${result.data.info.name}](${options.song})** to the queue`
         )
       }
 
