@@ -3,8 +3,10 @@ import { createCommand } from "@/util/command";
 
 export default createCommand({
   description: "Resume the current song",
-  middleware: requirePlayer,
   allowButtons: true,
+
+  middleware: m => m.use(requirePlayer),
+
   run: async ({ reply, data: { player } }) => {
     if (player.paused) {
       await player.setPaused(false)

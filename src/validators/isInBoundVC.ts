@@ -4,6 +4,7 @@ import { createValidator } from "@/util/validator"
 import isInGuild from "./isInGuild"
 import isInVC from "./isInVC"
 
+/** Checks if the user's voice channel is bound */
 export default createValidator({
   deps: [isInGuild(), isInVC()],
 

@@ -40,8 +40,9 @@ export default createCommand({
       description: "List all bound channels.",
     })
     .build(),
+
   validators: [hasPermissions(PermissionFlagsBits.ManageGuild)],
-  middleware: getOrCreateGuildOpts,
+  middleware: m => m.use(getOrCreateGuildOpts),
 
   run: async ({ i, options, reply, data: { guildOpts } }) => {
     const { _id: id, channels } = guildOpts

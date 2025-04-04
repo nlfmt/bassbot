@@ -24,7 +24,8 @@ export default createCommand({
       ],
     })
     .build(),
-  middleware: requirePlayer,
+
+  middleware: (m) => m.use(requirePlayer),
 
   run: async ({ options, reply, data: { player } }) => {
     const res = loopModeSchema.safeParse(options.mode)

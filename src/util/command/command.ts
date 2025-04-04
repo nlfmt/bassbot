@@ -10,8 +10,9 @@ import path from "node:path"
 import type { ResolveOptions } from "./option-resolver"
 import logger from "../logger"
 import type { ReplyHelper } from "../reply"
-import type { ValidatorFn } from "../validator"
+import type { Validator } from "../validator"
 import type { MiddlewareFn } from "../middleware"
+import type { Flatten } from "../types"
 
 export interface CommandContext<
   AllowButtons extends boolean = false,
@@ -27,6 +28,23 @@ export interface CommandContext<
   options: ResolveOptions<Options>
 }
 
+type MergeData<A extends Record<string, any>, B extends Record<string, any> | null> = B extends null
+  ? A
+  : Flatten<A & B>
+
+export class MiddlewareBuilder<
+  AllowButtons extends boolean,
+  Options extends ApplicationCommandOption[],
+  Data extends Record<string, any> = Record<string, never>,
+> {
+  middlewares: MiddlewareFn<any, any, any, any>[] = []
+
+  public use<NewData extends Record<string, any>>(fn: MiddlewareFn<AllowButtons, Options, Data, NewData>) {
+    this.middlewares.push(fn)
+    return this as unknown as MiddlewareBuilder<AllowButtons, Options, MergeData<Data, NewData>>
+  }
+}
+
 export interface Command<
   AllowButtons extends boolean = false,
   Options extends ApplicationCommandOption[] = [],
@@ -37,8 +55,8 @@ export interface Command<
   allowButtons?: AllowButtons
   category: string
   options?: Options
-  validators?: ValidatorFn<NoInfer<AllowButtons>, Options, Record<string, never>>[]
-  middleware?: MiddlewareFn<AllowButtons, Data>,
+  validators?: Validator<NoInfer<AllowButtons>>[]
+  middleware?: ((m: MiddlewareBuilder<AllowButtons, Options>) => MiddlewareBuilder<AllowButtons, Options, Data>)
   run: (ctx: CommandContext<NoInfer<AllowButtons>, Options, NoInfer<Data>>) => Awaitable<unknown>
 }
 

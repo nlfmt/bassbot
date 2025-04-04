@@ -17,7 +17,8 @@ export default createCommand({
       required: true,
     })
     .build(),
-  middleware: requireQueue,
+
+  middleware: m => m.use(requireQueue),
 
   run: async ({ options, reply, data: { player } }) => {
     const moved = player.moveTrack(options.from - 1, options.to - 1)

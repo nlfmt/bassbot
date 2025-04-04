@@ -11,12 +11,12 @@ export default createCommand({
       required: true,
     })
     .build(),
-  middleware: requirePlayer,
+
+  middleware: m => m.use(requirePlayer),
 
   run: async ({ options, reply, data: { player } }) => {
     const info = player.current?.info
     if (!info?.isSeekable) return reply.warn("This track is not seekable")
-    console.log(info)
 
     const { success, value: duration, error } = Timestamp.from(options.time)
     if (!success) return reply.warn(error)

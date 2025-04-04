@@ -3,6 +3,7 @@ import { isAllowedChannel } from "@/util/helpers"
 import { createValidator } from "@/util/validator"
 import isInGuild from "./isInGuild"
 
+/** Checks if the text channel is bound */
 export default createValidator({
   deps: [isInGuild()],
 

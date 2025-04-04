@@ -41,7 +41,11 @@ export function createReplyHelper(i: RepliableInteraction) {
 export type ReplyHelper = ReturnType<typeof createReplyHelper>
 
 export function createAbortHelper(i: RepliableInteraction, onAbort: () => void) {
-  const abort = async (msg: string, opts?: EmbedOpts) => {
+  const abort = () => {
+    onAbort()
+    return null
+  }
+  abort.reply = async (msg: string, opts?: EmbedOpts) => {
     onAbort()
     await replyEmbed(i, msg, opts)
     return null

@@ -3,7 +3,8 @@ import { createCommand } from "@/util/command"
 
 export default createCommand({
   description: "Remove all songs from the queue",
-  middleware: requireQueue,
+
+  middleware: m => m.use(requireQueue),
 
   run: async ({ reply, data: { player } }) => {
     player.clear()

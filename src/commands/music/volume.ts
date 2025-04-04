@@ -13,8 +13,9 @@ export default createCommand({
       maxValue: 100,
     })
     .build(),
+
   validators: [isInBoundVC()],
-  middleware: requirePlayer,
+  middleware: m => m.use(requirePlayer),
 
   run: async ({ options, reply, data: { player } }) => {
     await player.setGlobalVolume(options.value / 2)

@@ -14,7 +14,8 @@ export default createCommand({
       description: "The queue position of the last song to remove",
     })
     .build(),
-  middleware: requireQueue,
+
+  middleware: m => m.use(requireQueue),
 
   run: async ({ options, reply, data: { player } }) => {
     const deleteCount = player.remove(options.position - 1, (options.end ?? options.position) - 1)

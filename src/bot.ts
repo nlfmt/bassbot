@@ -1,10 +1,11 @@
 import { ActivityType, ChatInputCommandInteraction, Client, type Interaction } from "discord.js"
 import { Connectors, Shoukaku } from "shoukaku"
-import { loadCommands, parseOptions, type CommandContext } from "./util/command"
+import { loadCommands, MiddlewareBuilder, parseOptions, type CommandContext } from "./util/command"
 import { PlayerWithQueue } from "./player"
 import logger from "./util/logger"
 import { createAbortHelper, createReplyHelper, mockAbortHelper, mockReplyHelper, replyError } from "./util/reply"
 import nodes from "./nodes"
+import { runValidators } from "./util/validator"
 
 export class BassBot extends Client<true> {
   public lava = new Shoukaku(new Connectors.DiscordJS(this), nodes, {
@@ -70,7 +71,7 @@ export class BassBot extends Client<true> {
     const isCommand = i.isChatInputCommand()
     if (!(isCommand || i.isButton()) || !i.inCachedGuild()) return
 
-    const commandId = isCommand ? i.commandName : i.customId
+    const commandId = isCommand ? i.commandName : i.customId.split(":")[0]!
     const command = this.commands.get(commandId)
     if (!command) {
       logger.warn(`Command ${commandId} not found.`)
@@ -90,30 +91,36 @@ export class BassBot extends Client<true> {
     }
 
     try {
-      for (const validator of command.validators ?? []) {
-        const valid = await validator(ctx)
-        if (!valid) {
-          if (!ctx.i.replied) {
-            await ctx.reply.error("You cannot use this command here.")
-          }
-          return
+      if (command.validators && !await runValidators(command.validators, ctx)) {
+        if (!ctx.i.replied) {
+          await ctx.reply.error("You cannot use this command.")
         }
+        return
       }
 
       let aborted = false
       if (command.middleware) {
+        const middlewares = command.middleware(new MiddlewareBuilder()).middlewares
         const onAbort = () => (aborted = true)
-        ctx.data = await command.middleware(
-          ctx,
-          isCommand ? createAbortHelper(i, onAbort) : mockAbortHelper(i, onAbort)
-        )
+        
+        for (const fn of middlewares) {
+          const newData = await fn(ctx, isCommand ? createAbortHelper(i, onAbort) : mockAbortHelper(i, onAbort))
+          if (aborted) {
+            if (!ctx.i.replied) {
+              await ctx.reply.error("You cannot use this commmand.")
+            }
+            return
+          }
+          if (newData) ctx.data = { ...ctx.data, ...newData }
+        }
       }
 
-      if (aborted) return
       await command.run(ctx)
+
     } catch (e) {
       logger.error("CMD ERROR", "Unhandled Exception in command:")
       logger.debug(e)
+
       if (isCommand)
         await replyError(i, "An internal error occured. Please contact <@339719840363184138> if the issue persists.")
     }

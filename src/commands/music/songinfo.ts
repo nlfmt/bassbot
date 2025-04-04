@@ -12,8 +12,9 @@ export default createCommand({
       description: "Displays info about the current song",
     })
     .build(),
+
   validators: [isBoundChannel()],
-  middleware: requirePlayer,
+  middleware: m => m.use(requirePlayer),
 
   run: async ({ i, options, reply, data: { player } }) => {
     const position = options.position ?? 0

@@ -59,8 +59,8 @@ export default createCommand({
         .map(
           (cmd) =>
             `** ${cmd.name}**  ${"\u00A0".repeat(
-              Math.round((maxlen - 1.4 * pixelWidth(cmd.name, { bold: true, font: "arial" })) / pixelWidth("-")) + 3
-            )}  ${cmd.description}`
+              Math.round((maxlen - 1.4 * pixelWidth(cmd.name, { bold: true, font: "arial" })) / pixelWidth("-")) + 3,
+            )}  ${cmd.description}`,
         )
         .join("\n")
       footer = "Type /help <command> to get more information about a specific command."

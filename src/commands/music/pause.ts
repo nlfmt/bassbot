@@ -4,7 +4,8 @@ import { createCommand } from "@/util/command"
 export default createCommand({
   description: "Pauses the player",
   allowButtons: true,
-  middleware: requirePlayer,
+
+  middleware: m => m.use(requirePlayer),
 
   run: async ({ reply, data: { player } }) => {
     const newState = !player.paused
