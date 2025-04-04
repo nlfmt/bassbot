@@ -4,7 +4,7 @@ import { createCommand, buildOptions } from "@/util/command"
 import { cleanTrackTitle } from "@/util/helpers"
 import { replyEmbed, type ReplyHelper } from "@/util/reply"
 import { duration } from "@/util/time"
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags, MessagePayload, type InteractionEditReplyOptions, type InteractionReplyOptions, type RepliableInteraction } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags, type InteractionEditReplyOptions, type RepliableInteraction } from "discord.js"
 
 export default createCommand({
   description: "View a list of songs in the queue",
